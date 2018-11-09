@@ -39,6 +39,10 @@ class Knapsack {
     func runKnapsack(maxWeight: Int) {
         self.maxWeight = maxWeight
         print("RESULTADO KNAPSACK - \(doKnapsack(index: itens.count - 1, weight: maxWeight))")
+        printSelectedItens()
+        
+        memo = createMemoMatrix()
+        taken = createTakenMatrix()
     }
     
     private func doKnapsack(index: Int, weight: Int) -> Int {
@@ -55,6 +59,56 @@ class Knapsack {
         }
         
         //Caso contrario, decide a melhor opção entre adicionar o item ou nao
-        return max(doKnapsack(index: index - 1, weight: weight), doKnapsack(index: index - 1, weight: weight - itens[index].weight) + itens[index].value)
+        let not_take = doKnapsack(index: index - 1, weight: weight)
+        let take = doKnapsack(index: index - 1, weight: weight - itens[index].weight) + itens[index].value
+        
+        if take > not_take {
+            taken[index][weight] = true
+            memo[index][weight] = take
+            return take
+        } else {
+            memo[index][weight] = not_take
+            return not_take
+        }
+    }
+    func getSelectedItens(index: Int, weight: Int) -> Array<KnapItem>{
+        var i = index
+        var w = weight
+        
+        var selectedItens = [KnapItem]()
+        
+        repeat {
+            if taken[i][w] {
+                w-=itens[i].weight
+                selectedItens.append(itens[i])
+            }
+            i-=1
+        } while i>0
+        
+        return selectedItens
+    }
+    
+    func printSelectedItens() {
+        let selec = getSelectedItens(index: itens.count - 1, weight: maxWeight)
+        
+        if selec.count == 0 {
+            print("NENHUM ITEM SELECIONADO")
+            return
+        }
+        
+        print("ITENS SELECIONADOS:")
+        for item in selec {
+            print("\(item.value) - \(item.weight)")
+        }
+    }
+    
+    private func createMemoMatrix() -> Array<Array<Int>> {
+        let arrayInt = Array(repeating: -1, count: 1000)
+        return Array(repeating: arrayInt, count: 1000)
+    }
+    
+    private func createTakenMatrix() -> Array<Array<Bool>> {
+        let arrayBool = Array(repeating: false, count: 1000)
+        return Array(repeating: arrayBool, count: 1000)
     }
 }

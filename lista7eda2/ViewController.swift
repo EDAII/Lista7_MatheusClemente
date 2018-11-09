@@ -31,6 +31,13 @@ class ViewController: UIViewController {
         }
         
         knap?.runKnapsack(maxWeight: 10)
+        
+        for _ in 1...10 {
+            let newTestItem = KnapItem(value: Int.random(in: 1..<100), weight: Int.random(in: 1...10))
+            print("\(newTestItem.value) - \(newTestItem.weight)")
+            knap?.addItem(newTestItem)
+        }
+        knap?.runKnapsack(maxWeight: 30)
     }
 
 }
