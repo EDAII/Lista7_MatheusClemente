@@ -17,7 +17,7 @@ class Knapsack {
     private var memo: Array<Array<Int>>
     private var taken: Array<Array<Bool>>
     
-    private var itens: Array<KnapItem>
+    var itens: Array<KnapItem>
     
     var maxWeight: Int = 0
     
@@ -31,18 +31,19 @@ class Knapsack {
         
     }
     
-    
     func addItem(_ item: KnapItem) {
         itens.append(item)
     }
     
-    func runKnapsack(maxWeight: Int) {
+    func runKnapsack(maxWeight: Int) -> Int{
         self.maxWeight = maxWeight
-        print("RESULTADO KNAPSACK - \(doKnapsack(index: itens.count - 1, weight: maxWeight))")
-        printSelectedItens()
-        
+        return doKnapsack(index: itens.count - 1, weight: maxWeight)
+    }
+    
+    func resetKnapsack() {
         memo = createMemoMatrix()
         taken = createTakenMatrix()
+        itens.removeAll()
     }
     
     private func doKnapsack(index: Int, weight: Int) -> Int {
@@ -71,9 +72,9 @@ class Knapsack {
             return not_take
         }
     }
-    func getSelectedItens(index: Int, weight: Int) -> Array<KnapItem>{
-        var i = index
-        var w = weight
+    func getSelectedItens() -> Array<KnapItem>{
+        var i = itens.count - 1
+        var w = maxWeight
         
         var selectedItens = [KnapItem]()
         
@@ -83,13 +84,13 @@ class Knapsack {
                 selectedItens.append(itens[i])
             }
             i-=1
-        } while i>0
+        } while i>=0
         
         return selectedItens
     }
     
     func printSelectedItens() {
-        let selec = getSelectedItens(index: itens.count - 1, weight: maxWeight)
+        let selec = getSelectedItens()
         
         if selec.count == 0 {
             print("NENHUM ITEM SELECIONADO")

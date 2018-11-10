@@ -12,33 +12,79 @@ class ViewController: UIViewController {
 
     var knap: Knapsack?
     
+    @IBOutlet weak var valorField: UITextField!
+    
+    @IBOutlet weak var pesoField: UITextField!
+    
+    @IBOutlet weak var weightOutlet: UILabel!
+    
+    @IBOutlet weak var slider: UISlider!
+    
+    @IBOutlet weak var textLabel: UILabel!
+    
+    @IBOutlet weak var knapBtn: UIButton!
+
+    @IBOutlet weak var resultLabel: UILabel!
+    
+    var toReset = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         knap = Knapsack()
-        testKnapsack()
         
         // Do any additional setup after loading the view, typically from a nib.
     }
     
-    func testKnapsack() {
-        
-        
-        //cria 10 itens randomicos
-        for _ in 1...10 {
-            let newTestItem = KnapItem(value: Int.random(in: 1..<100), weight: Int.random(in: 1...10))
-            print("\(newTestItem.value) - \(newTestItem.weight)")
-            knap?.addItem(newTestItem)
-        }
-        
-        knap?.runKnapsack(maxWeight: 10)
-        
-        for _ in 1...10 {
-            let newTestItem = KnapItem(value: Int.random(in: 1..<100), weight: Int.random(in: 1...10))
-            print("\(newTestItem.value) - \(newTestItem.weight)")
-            knap?.addItem(newTestItem)
-        }
-        knap?.runKnapsack(maxWeight: 30)
+    @IBAction func dissmissKeyboard(_ sender: Any) {
+        view.endEditing(true)
     }
-
+    
+    @IBAction func sliderAction(_ sender: UISlider) {
+        let value =  Int(sender.value)
+        
+        weightOutlet.text = "Capacidade: \(value)"
+    }
+    
+    @IBAction func addItemAction(_ sender: Any) {
+        if let valor = Int(valorField.text!) {
+            if let peso = Int(pesoField.text!) {
+                let newItem = KnapItem(value: valor, weight: peso)
+                knap?.addItem(newItem)
+                textLabel.text?.append("\n\(newItem.value) - (\(newItem.weight) P)")
+            }
+        }
+        
+    }
+    
+    
+    @IBAction func knapAction(_ sender: Any) {
+        if toReset {
+            textLabel.text = "Itens"
+            resultLabel.text = "Resultado:"
+            knap?.resetKnapsack()
+            toReset = false
+        } else {
+        
+            if knap?.itens.isEmpty ?? true {
+                resultLabel.text = "Não há valores"
+            } else {
+                let result = knap?.runKnapsack(maxWeight: Int(slider.value))
+                let itens = knap?.getSelectedItens()
+                
+                textLabel.text = "Itens Selecionados:"
+                if itens?.count == 0 {
+                    textLabel.text?.append("\nNenhum item")
+                } else {
+                    for i in itens! {
+                        textLabel.text?.append("\n\(i.value) - (\(i.weight) P)")
+                    }
+                }
+                
+                resultLabel.text = "Resultado: \(result)"
+                toReset = true
+                
+            }
+        }
+    }
+    
 }
-
